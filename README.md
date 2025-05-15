@@ -31,3 +31,30 @@ This occurs because:
 The queue count eventually returns to zero once all messages are processed, showing that the message broker successfully handled the temporary backlog caused by the slow consumer.
 
 In my testing, the maximum queue size reached about 10 messages, demonstrating how RabbitMQ effectively manages the difference in speed between publishers and subscribers.
+
+### Three Subscribers
+![Three Subscribers](three.png)
+
+When running three subscriber instances simultaneously with multiple publisher runs, the queue is depleted significantly faster than with a single subscriber. This occurs because:
+
+1. Parallel Processing: Three subscribers process messages concurrently, tripling throughput
+2. Load Distribution: RabbitMQ automatically distributes messages among all available consumers
+3. Faster Queue Resolution: Even with the 1-second processing delay in each subscriber, the collective processing power reduces backlog more quickly
+4. Resource Utilization: System resources are better utilized with multiple consumers
+
+Potential Code Improvements
+
+Subscriber Improvements:
+
+1. Make processing delay configurable rather than hardcoded
+2. Implement proper error handling for failed message processing
+3. Complete the get_handler_action() method instead of using todo!()
+
+Publisher Improvements:
+
+1. Add proper error handling around connection and publishing operations
+2. Implement batch message publishing for better efficiency
+3. Use configuration for connection parameters rather than hardcoded values
+4. Add confirmation handling to ensure messages are properly delivered
+
+These improvements would enhance reliability, configurability, and maintainability of the messaging system.
